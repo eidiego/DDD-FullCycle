@@ -1,9 +1,10 @@
 import Order from "../../../../domain/checkout/entity/order";
 import OrderItem from "../../../../domain/checkout/entity/order_item";
+import OrderRepositoryInterface from "../../../../domain/checkout/repository/order-repository.interface";
 import OrderItemModel from "./order-item.model";
 import OrderModel from "./order.model";
 
-export default class OrderRepository {
+export default class OrderRepository implements OrderRepositoryInterface{
   async create(entity: Order): Promise<void> {
     await OrderModel.create(
       {
@@ -45,14 +46,9 @@ export default class OrderRepository {
     );
   }
 
-
-  async find(entity: Order): Promise<Order> {
-    const orderModel = await OrderModel.findOne({
-      where: {
-        id: entity.id,
-      },
-      include: [{ model: OrderItemModel }],
-    });
+  async find(id: string): Promise<Order> {
+    
+    const orderModel = await OrderModel.findOne({ where: { id } });
 
     return new Order(
       orderModel.id,
@@ -66,8 +62,8 @@ export default class OrderRepository {
       ))
     );
 
-  }
 
+  }
   async findAll(): Promise<Order[]> {
     
     const orderModel = await OrderModel.findAll({
